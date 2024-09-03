@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "opengist.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "opengist.labels" . | indent 4 }}
+data:
+  config.yml: |-
+{{ tpl (.Values.config | toYaml) . | indent 4 }}
+  replace_secrets.sh: |
+    #!/bin/sh
+    set -e
+    config_file="/tmp/config/config.yml"
+    output_file="/config/config.yml"
+
+    echo "Starting secret processing"
+
+    # Copy the original config to the output location
+    cp "$config_file" "$output_file"
+
+    # Process each secret file
+    for secret_file in /tmp/secrets/*; do
+      if [ -f "$secret_file" ]; then
+        key=$(basename "$secret_file")
+        value=$(cat "$secret_file")
+        echo "Processing secret: $key"
+
+    if [ -s "$output_file" ] && [ "$(cat "$output_file")" != "null" ]; then
+      awk -v key="$key" -v value="$value" '
+        $0 ~ "^"key":" { found=1; print key": "value; next }
+          { print }
+          END { if (!found) print key": "value }
+        ' "$output_file" > "${output_file}.tmp" && mv "${output_file}.tmp" "$output_file"
+      else
+        echo "$key: $value" > "$output_file"
+      fi
+
+      fi
+    done
+    # Ensure the main container can read the config file
+    chmod 644 "$output_file"
+    echo "Permissions set on $output_file"

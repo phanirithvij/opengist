@@ -1,0 +1,22 @@
+{{- if .Values.serviceSsh.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "opengist.fullname" . }}-ssh
+  labels:
+    {{- include "opengist.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.serviceSsh.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.serviceSsh.type }}
+  ports:
+    - port: {{ .Values.serviceSsh.port }}
+      targetPort: {{ .Values.serviceSsh.port }}
+      protocol: TCP
+      name: ssh
+      {{- if .Values.serviceSsh.nodePort }}
+      nodePort: {{ .Values.serviceSsh.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "opengist.selectorLabels" . | nindent 4 }}
+{{- end }}

@@ -11,7 +11,7 @@ metadata:
   name: opengist
 
 resources:
-  - https://github.com/thomiceli/opengist/deploy/
+  - https://github.com/thomiceli/opengist/deploy/kustomize
 ```
 
 ## Full example
@@ -28,7 +28,7 @@ namespace: opengist
 
 resources:
   - namespace.yaml
-  - https://github.com/thomiceli/opengist/deploy/?ref:v1.7.3
+  - https://github.com/thomiceli/opengist/deploy/kustomize?ref:v1.7.3
 
 images:
   - name: ghcr.io/thomiceli/opengist

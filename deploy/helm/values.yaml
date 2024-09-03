@@ -1,0 +1,151 @@
+# Default values for opengist.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: ghcr.io/thomiceli/opengist
+  pullPolicy: IfNotPresent
+  tag: ""
+
+## - YAML config of Opengist https://github.com/thomiceli/opengist/blob/master/docs/configuration/cheat-sheet.md - ##
+# Uses a ConfigMap for non-sensitive configuration
+config: {}
+  # log-output: stdout
+
+# Uses a Secret for sensitive configuration
+configSecret: {}
+  # gitea.client-key:
+  # gitea.secret:
+
+env: []
+  # - name: KEY
+  #   value: VALUE
+
+replicaCount: 1
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 0
+
+imagePullSecrets: []
+
+serviceHttp:
+  type: ClusterIP
+  port: 6157
+  # nodePort:
+  annotations: {}
+
+serviceSsh:
+  enabled: true # enable ssh service
+  type: LoadBalancer
+  port: 2222
+  # nodePort:
+  annotations:
+    metallb.universe.tf/allow-shared-ip: "opengist" # allow shared ip for ssh service
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 300
+  timeoutSeconds: 3
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 10
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  timeoutSeconds: 3
+  periodSeconds: 30
+  successThreshold: 1
+  failureThreshold: 2
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: demo.opengist.io
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []  # leave as it is if cert-manager is enabled
+  #  - secretName: web-ssl
+  #    hosts:
+  #      - demo.opengist.io
+
+certManager:
+  enabled: false
+  issuer: "letsencrypt-prod"
+
+persistence:
+  enabled: true
+  # existingClaim:
+  # storageClass:
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  filestore_dir: /opengist
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+extraVolumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+

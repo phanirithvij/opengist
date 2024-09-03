@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "opengist.fullname" . }}-http
+  labels:
+    {{- include "opengist.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.serviceHttp.annotations | nindent 4 }}
+spec:
+  type: {{ .Values.serviceHttp.type }}
+  ports:
+    - port: {{ .Values.serviceHttp.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      {{- if .Values.serviceHttp.nodePort }}
+      nodePort: {{ .Values.serviceHttp.nodePort }}
+      {{- end }}
+  selector:
+    {{- include "opengist.selectorLabels" . | nindent 4 }}
