@@ -72,7 +72,7 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: []  # leave as it is if cert-manager is enabled
+  tls: []  # leave as it is if certManager.enabled is true
   #  - secretName: web-ssl
   #    hosts:
   #      - demo.opengist.io
