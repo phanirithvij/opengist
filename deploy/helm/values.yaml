@@ -51,13 +51,13 @@ livenessProbe:
   timeoutSeconds: 3
   periodSeconds: 30
   successThreshold: 1
-  failureThreshold: 10
+  failureThreshold: 5
 
 readinessProbe:
   enabled: true
-  initialDelaySeconds: 60
+  initialDelaySeconds: 10
   timeoutSeconds: 3
-  periodSeconds: 30
+  periodSeconds: 10
   successThreshold: 1
   failureThreshold: 2
 
@@ -87,7 +87,6 @@ persistence:
   # storageClass:
   accessMode: ReadWriteOnce
   size: 10Gi
-  filestore_dir: /opengist
 
 autoscaling:
   enabled: false
@@ -115,7 +114,7 @@ tolerations: []
 affinity: {}
 
 serviceAccount:
-  create: true
+  create: false
   automount: true
   annotations: {}
   name: ""
