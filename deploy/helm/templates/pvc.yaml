@@ -6,6 +6,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ include "opengist.labels" . | indent 4 }}
+  annotations:
+    helm.sh/resource-policy: "keep"
+  {{- with .Values.persistence.annotations }}
+    {{ toYaml . | indent 4 }}
+  {{- end }}
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}

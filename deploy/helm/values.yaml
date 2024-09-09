@@ -4,13 +4,18 @@
 
 image:
   repository: ghcr.io/thomiceli/opengist
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: ""
 
 ## - YAML config of Opengist https://github.com/thomiceli/opengist/blob/master/docs/configuration/cheat-sheet.md - ##
 # Uses a ConfigMap for non-sensitive configuration
-config: {}
-  # log-output: stdout
+config:
+  custom.static-links:
+    - name: Discord                                                                                                                                                                      │
+      path: https://discord.gg/9Pm3X5scZT                                                                                                                                                │
+  git.default-branch: master                                                                                                                                                           │
+  log-level: warn                                                                                                                                                                      │
+  log-output: stdout
 
 # Uses a Secret for sensitive configuration
 configSecret: {}
@@ -26,8 +31,8 @@ replicaCount: 1
 strategy:
   type: RollingUpdate
   rollingUpdate:
-    maxSurge: 25%
-    maxUnavailable: 25%
+    maxSurge: 1
+    maxUnavailable: 0
 
 imagePullSecrets: []
 
@@ -87,6 +92,7 @@ persistence:
   # storageClass:
   accessMode: ReadWriteOnce
   size: 10Gi
+  annotations: {}
 
 autoscaling:
   enabled: false
