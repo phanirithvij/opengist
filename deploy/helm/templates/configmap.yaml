@@ -10,6 +10,8 @@ data:
 {{ tpl (.Values.config | toYaml) . | indent 4 }}
   replace_secrets.sh: |
     #!/bin/sh
+    ls
+    exit 0
     set -e
     config_file="/tmp/config/config.yml"
     output_file="/config/config.yml"

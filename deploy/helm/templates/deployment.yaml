@@ -32,20 +32,6 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      initContainers:
-        - name: init-config
-          image: busybox
-          command: [ "/bin/sh", "/scripts/replace_secrets.sh" ]
-          volumeMounts:
-            - name: config-template
-              mountPath: /tmp/config
-            - name: secret-config
-              mountPath: /tmp/secrets
-              readOnly: true
-            - name: scripts
-              mountPath: /scripts
-            - name: config
-              mountPath: /config
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -89,7 +75,7 @@ spec:
           volumeMounts:
             - name: opengist-data
               mountPath: /opengist
-            - name: config
+            - name: config-cm
               mountPath: /config.yml
               subPath: config.yml
             {{- if .Values.extraVolumeMounts }}
@@ -103,21 +89,9 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        - name: config
-          emptyDir: {}
-        - name: config-template
+        - name: config-cm
           configMap:
             name: {{ include "opengist.fullname" . }}
-        - name: secret-config
-          secret:
-            secretName: {{ include "opengist.fullname" . }}-secret
-        - name: scripts
-          configMap:
-            name: {{ include "opengist.fullname" . }}
-            items:
-              - key: replace_secrets.sh
-                path: replace_secrets.sh
-                mode: 0755
       {{- if .Values.volumes }}
         {{- toYaml .Values.volumes | nindent 8 }}
       {{- end }}
